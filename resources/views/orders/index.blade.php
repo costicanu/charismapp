@@ -14,17 +14,14 @@
                             </div>
                         @endif
 
-                        <div class="content">
-                            <table>
-                            @foreach($orders as $order)
-                                <tr>
-                                    <td>
-                                        {{$order->order_id}}
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </table>
+                        <div id="app">
+
+                            <orders>
+
+                            </orders>
+
                         </div>
+
 
                     </div>
 
@@ -33,4 +30,6 @@
             </div>
         </div>
     </div>
+
+
 @endsection
