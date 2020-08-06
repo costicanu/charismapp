@@ -5,7 +5,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">Example Component</div>
-                    <button type="button" class="my-button" v-text="test">sssv</button>
+
                     <div class="card-body">
                             <table class="table">
                             <tr v-for="order in orders.data">

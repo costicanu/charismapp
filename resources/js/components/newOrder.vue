@@ -2,15 +2,26 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
+            <div class="col-md-7">
+sssssss
+            </div>
+            <div class="col-md-6">
+                sdfsdfsdf
+            </div>
+
+        </div>
+
+        <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">Example Component</div>
-                    <button type="button" class="my-button" v-text="test">sssv</button>
                     <div class="card-body">
                         <table class="table-bordered">
                             <tr>
                                 <td>Nume</td>
-                                <td>{{woocommerce_order.order.billing_address.first_name}} {{woocommerce_order.order.billing_address.last_name}}</td>
+                                <td>{{woocommerce_order.order.billing_address.first_name}}
+                                    {{woocommerce_order.order.billing_address.last_name}}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Id comanda:</td>
@@ -21,10 +32,10 @@
                                 <td>{{woocommerce_order.order.customer.email}}</td>
                             </tr>
                             <template v-if="woocommerce_order.order['Nume Companie']">
-                            <tr>
-                                <td><b>Companie:</b></td>
-                                <td>{{woocommerce_order.order['Nume Companie']}}</td>
-                            </tr>
+                                <tr>
+                                    <td><b>Companie:</b></td>
+                                    <td>{{woocommerce_order.order['Nume Companie']}}</td>
+                                </tr>
                                 <tr>
                                     <td>CUI</td>
                                     <td>{{woocommerce_order.order['CUI']}}</td>
@@ -40,7 +51,8 @@
                             </template>
                         </table>
 
-                              {{woocommerce_order}}
+
+                        {{woocommerce_order}}
 
                     </div>
                 </div>
@@ -51,8 +63,20 @@
                 <h2>Produse:</h2>
                 <table class="table">
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <th>SKU</th>
+                        <th>Nume</th>
+                        <th>Pret Unitar</th>
+                        <th>Cantitate</th>
+                        <th>Subtotal</th>
+                        <th>Total cu taxe</th>
+                    </tr>
+                    <tr v-for="product in this.woocommerce_order.order.line_items">
+                        <td>{{product.sku}}</td>
+                        <td>{{product.name}}</td>
+                        <td>{{product.price}}</td>
+                        <td>{{product.quantity}}</td>
+                        <td>{{product.subtotal}}</td>
+                        <td>{{product.total}}</td>
                     </tr>
                 </table>
             </div>
@@ -65,7 +89,7 @@
 <script>
     export default {
         mounted() {
-            console.log(this.woocommerce_order.order.line_items);
+           // console.log(this.woocommerce_order.order.line_items);
             /*
             axios.get('/charismapp/public/api/listOrders',{})
                 .then(response =>{
@@ -97,7 +121,7 @@
 
         methods: {
             getOrder() {
-                console.log(this.woocommerce_order.line_items);
+                //console.log(this.woocommerce_order.line_items);
                 //return  this.woocommerce_order.order.order_number;
 
             },

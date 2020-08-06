@@ -7,6 +7,8 @@ Use App\Order;
 Use App\Customer;
 Use Illuminate\Support\Facades\DB;
 Use App\Http\Resources\Order as OrderResource;
+Use App\CharismaSoap;
+Use App\PricesCharisma;
 
 class OrderController extends Controller
 {
@@ -66,7 +68,20 @@ class OrderController extends Controller
 
     public function test(){
 
+        $project_id=1;
+        $client=new CharismaSoap($project_id);
+        $price_list=$client->getPrice([ 'PriceListDate' => '2020-08-04']);
+        $charisma_prices=new PricesCharisma($project_id);
+
+        #$charisma_prices->rewriteDatabasePrices($price_list);
+  
     }
+
+    private function charismaSoap(){
+
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *

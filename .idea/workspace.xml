@@ -2,26 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="deac2f5d-9999-49fa-904c-d08016d21a28" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/resources/js/components/newOrder.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/orders/newOrder.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/charismapp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/charismapp.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/CharismaSoap.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/PricesCharisma.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Project.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/mix-manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/mix-manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/ExampleComponent.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/ExampleComponent.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/newOrder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/newOrder.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/components/orders.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/orders.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/orders/index.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/orders/index.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webpack.mix.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.mix.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,6 +154,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\xampp_nou\htdocs\charismapp\app\" />
       <recent name="C:\xampp_nou\htdocs\charismapp\resources\views\orders" />
       <recent name="C:\xampp_nou\htdocs\charismapp\resources\views" />
     </key>
@@ -201,7 +191,11 @@
       <workItem from="1594223746762" duration="1689000" />
       <workItem from="1594620541917" duration="59983000" />
       <workItem from="1594966962607" duration="18455000" />
-      <workItem from="1595226304050" duration="58037000" />
+      <workItem from="1595226304050" duration="59378000" />
+      <workItem from="1595495929659" duration="12087000" />
+      <workItem from="1595830701969" duration="6695000" />
+      <workItem from="1596434971389" duration="3347000" />
+      <workItem from="1596525418005" duration="42611000" />
     </task>
     <servers />
   </component>

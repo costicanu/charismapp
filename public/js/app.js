@@ -1972,6 +1972,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log(this.woocommerce_order.order.line_items);
@@ -37649,10 +37664,11 @@ var render = function() {
                       _vm._s(
                         _vm.woocommerce_order.order.billing_address.first_name
                       ) +
-                        " " +
+                        "\n                                " +
                         _vm._s(
                           _vm.woocommerce_order.order.billing_address.last_name
-                        )
+                        ) +
+                        "\n                            "
                     )
                   ])
                 ]),
@@ -37726,7 +37742,7 @@ var render = function() {
               2
             ),
             _vm._v(
-              "\n\n                          " +
+              "\n\n\n                    " +
                 _vm._s(_vm.woocommerce_order) +
                 "\n\n                "
             )
@@ -37735,7 +37751,36 @@ var render = function() {
       ])
     ]),
     _vm._v(" "),
-    _vm._m(1)
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _c("div", { staticClass: "col-md-12" }, [
+        _c("h2", [_vm._v("Produse:")]),
+        _vm._v(" "),
+        _c(
+          "table",
+          { staticClass: "table" },
+          [
+            _vm._m(1),
+            _vm._v(" "),
+            _vm._l(this.woocommerce_order.order.line_items, function(product) {
+              return _c("tr", [
+                _c("td", [_vm._v(_vm._s(product.sku))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(product.name))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(product.price))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(product.quantity))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(product.subtotal))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(product.total))])
+              ])
+            })
+          ],
+          2
+        )
+      ])
+    ])
   ])
 }
 var staticRenderFns = [
@@ -37749,14 +37794,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("h2", [_vm._v("Produse:")]),
-        _vm._v(" "),
-        _c("table", { staticClass: "table" }, [
-          _c("tr", [_c("td"), _vm._v(" "), _c("td")])
-        ])
-      ])
+    return _c("tr", [
+      _c("th", [_vm._v("SKU")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Nume")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Pret Unitar")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Cantitate")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Subtotal")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Total cu taxe")])
     ])
   }
 ]
