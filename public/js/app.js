@@ -1987,9 +1987,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log(this.woocommerce_order.order.line_items);
+  mounted: function mounted() {// console.log('youhooo');
+    // console.log(this.woocommerce_order.order.line_items);
+
     /*
     axios.get('/charismapp/public/api/listOrders',{})
         .then(response =>{
@@ -2000,17 +2036,33 @@ __webpack_require__.r(__webpack_exports__);
     ;
       */
   },
-  props: ['text', 'woocommerce_order' //'name',
+  computed: {},
+  props: ['text', 'woocommerce_order', 'prices_table_last_update', 'project_id' //'name',
   ],
   data: function data() {
     return {
-      test: null
+      test: null,
+      loading_prices: 0
     };
   },
   created: function created() {},
   methods: {
-    getOrder: function getOrder() {
-      console.log(this.woocommerce_order.line_items); //return  this.woocommerce_order.order.order_number;
+    getOrder: function getOrder() {//console.log(this.woocommerce_order.line_items);
+      //return  this.woocommerce_order.order.order_number;
+    },
+    refreshPreturi: function refreshPreturi() {
+      var _this = this;
+
+      axios.get('/charismapp/public/rewriteDatabasePrices', {}).then(function (response) {//console.log(response);
+        //console.log(this.orders.data);
+      }).then(function (response) {
+        _this.loading_prices = 0;
+        location.reload(true);
+      });
+      this.loading_prices = 1; // punem sa astepte
+    },
+    theroute: function theroute() {
+      return window.location.href;
     }
   }
 });
@@ -2026,7 +2078,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
 //
 //
 //
@@ -37635,21 +37686,57 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row justify-content-center" }, [
+      _c("div", { staticClass: "col-md-7" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-6" }, [
+        _c("div", { staticClass: "card-body" }, [
+          _c("div", { staticClass: "prices-latest-update" }, [
+            _c(
+              "button",
+              {
+                attrs: { disabled: _vm.loading_prices == 1 },
+                on: {
+                  click: function($event) {
+                    return _vm.refreshPreturi()
+                  }
+                }
+              },
+              [
+                _vm.loading_prices
+                  ? [
+                      _c("div", { staticClass: "loader" }),
+                      _vm._v(
+                        "\n                            Asteapta te rog, extrag preturile din Charisma\n                        "
+                      )
+                    ]
+                  : [
+                      _vm._v(
+                        "\n                            Reincarca Preturile\n                        "
+                      )
+                    ]
+              ],
+              2
+            ),
+            _vm._v(" "),
+            _c("p", [
+              _vm._v(
+                "\n                        Ultimul update al preturilor din Charisma: "
+              ),
+              _c("span", { staticClass: "bold" }, [
+                _vm._v(_vm._s(_vm.prices_table_last_update.date))
+              ])
+            ])
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "col-md-12" }, [
         _c("div", { staticClass: "card" }, [
           _c("div", { staticClass: "card-header" }, [
             _vm._v("Example Component")
           ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "my-button",
-              attrs: { type: "button" },
-              domProps: { textContent: _vm._s(_vm.test) }
-            },
-            [_vm._v("sssv")]
-          ),
           _vm._v(" "),
           _c("div", { staticClass: "card-body" }, [
             _c(
@@ -37780,7 +37867,10 @@ var render = function() {
           2
         )
       ])
-    ])
+    ]),
+    _vm._v("\n\n    " + _vm._s(_vm.theroute())),
+    _c("br"),
+    _vm._v("\n    ss" + _vm._s(_vm.project_id) + "aa\n")
   ])
 }
 var staticRenderFns = [
@@ -37835,18 +37925,8 @@ var render = function() {
       _c("div", { staticClass: "col-md-8" }, [
         _c("div", { staticClass: "card" }, [
           _c("div", { staticClass: "card-header" }, [
-            _vm._v("Example Component")
+            _vm._v("Example Component ss")
           ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "my-button",
-              attrs: { type: "button" },
-              domProps: { textContent: _vm._s(_vm.test) }
-            },
-            [_vm._v("sssv")]
-          ),
           _vm._v(" "),
           _c("div", { staticClass: "card-body" }, [
             _c(

@@ -24,5 +24,4 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('orders','OrderController');
 Route::get('newOrder/{project_id}/{order_id}','OrderController@newOrder');
 Route::get('test/','OrderController@test');
-
-
+Route::get('rewriteDatabasePrices','OrderController@rewriteDatabasePrices');

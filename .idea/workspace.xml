@@ -2,14 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="deac2f5d-9999-49fa-904c-d08016d21a28" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/CharismaSoap.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/PricesCharisma.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Project.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/OrderController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/css/custom.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/custom.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/mix-manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/mix-manifest.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/components/newOrder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/newOrder.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/components/orders.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/orders.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/sass/custom.scss" beforeDir="false" afterPath="$PROJECT_DIR$/resources/sass/custom.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/orders/newOrder.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/orders/newOrder.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -195,7 +197,9 @@
       <workItem from="1595495929659" duration="12087000" />
       <workItem from="1595830701969" duration="6695000" />
       <workItem from="1596434971389" duration="3347000" />
-      <workItem from="1596525418005" duration="42611000" />
+      <workItem from="1596525418005" duration="52340000" />
+      <workItem from="1596803610698" duration="2619000" />
+      <workItem from="1597668208118" duration="29935000" />
     </task>
     <servers />
   </component>

@@ -1,12 +1,34 @@
 <script src="../../../node_modules/http-proxy-middleware/lib/router.js"></script>
+
+
 <template>
     <div class="container">
         <div class="row justify-content-center">
+
             <div class="col-md-7">
-sssssss
             </div>
             <div class="col-md-6">
-                sdfsdfsdf
+                <div class="card-body">
+                    <div class="prices-latest-update">
+
+                        <button v-on:click="refreshPreturi()" :disabled="loading_prices==1">
+
+                            <template v-if="loading_prices">
+                                <div class="loader">
+                                </div>
+                                Asteapta te rog, extrag preturile din Charisma
+                            </template>
+
+                            <template v-else>
+                                Reincarca Preturile
+                            </template>
+
+                        </button>
+                        <p>
+                            Ultimul update al preturilor din Charisma: <span class="bold">{{prices_table_last_update.date}}</span>
+                        </p>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -82,14 +104,20 @@ sssssss
             </div>
         </div>
 
+        {{theroute()}}<br />
+        ss{{project_id}}aa
     </div>
 </template>
+
+
 
 
 <script>
     export default {
         mounted() {
-           // console.log(this.woocommerce_order.order.line_items);
+            // console.log('youhooo');
+
+            // console.log(this.woocommerce_order.order.line_items);
             /*
             axios.get('/charismapp/public/api/listOrders',{})
                 .then(response =>{
@@ -101,9 +129,14 @@ sssssss
 
              */
         },
+
+        computed: {},
+
         props: [
             'text',
-            'woocommerce_order'
+            'woocommerce_order',
+            'prices_table_last_update',
+            'project_id'
 
 
             //'name',
@@ -112,6 +145,7 @@ sssssss
         data: function () {
             return {
                 test: null,
+                loading_prices: 0,
 
 
             }
@@ -125,6 +159,27 @@ sssssss
                 //return  this.woocommerce_order.order.order_number;
 
             },
+            refreshPreturi: function () {
+                axios.get('/charismapp/public/rewriteDatabasePrices', {})
+                    .then(response => {
+                        //console.log(response);
+
+
+                        //console.log(this.orders.data);
+                    })
+                    .then(response => {
+                        this.loading_prices = 0;
+                        location.reload(true);
+                    })
+
+                this.loading_prices = 1; // punem sa astepte
+
+            },
+
+            theroute: function(){
+                return window.location.href;
+            },
+
         }
     }
 </script>

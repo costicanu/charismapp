@@ -16,7 +16,10 @@
 
                         <div id="app">
 
-                            <neworder v-bind:woocommerce_order='<?php echo json_encode($woocommerceOrder);?>'>
+                            <neworder v-bind:woocommerce_order='<?php echo json_encode($woocommerceOrder);?>'
+                                      v-bind:prices_table_last_update='<?php echo json_encode(['date'=>$prices_table_last_update]);?>'
+                                      v-bind:project_id='<?php echo json_encode(['project_id'=>$project_id]);?>'
+                            >
                             </neworder>
 
                         </div>

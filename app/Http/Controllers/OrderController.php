@@ -66,16 +66,35 @@ class OrderController extends Controller
         return json_decode($response);
     }
 
-    public function test(){
 
-        $project_id=1;
+
+    public function rewriteDatabasePrices($project_id=1){
         $client=new CharismaSoap($project_id);
-        $price_list=$client->getPrice([ 'PriceListDate' => '2020-08-04']);
+        $price_list=$client->getPrice([ 'PriceListDate' => date('Y-m-d')]);
         $charisma_prices=new PricesCharisma($project_id);
+        $charisma_prices->rewriteDatabasePrices($price_list);
+        DB::table('options')->where(['var_name'=>'prices_table_last_update','project_id'=>$project_id])->update(['var_value'=> date('Y-m-d')]);
 
-        #$charisma_prices->rewriteDatabasePrices($price_list);
-  
     }
+
+    public function test(){
+        $project = DB::table('projects')->where('id', '=', $project_id)->first();
+        $username_password = 'consumer_key=' . $project->username . '&consumer_secret=' . $project->password;
+        $url = $project->url.'/wc-api/v3/orders/' . $order_id . '/?' . $username_password;
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        if (curl_errno($ch)) {
+            //If an error occured, throw an Exception.
+            throw new Exception(curl_error($ch));
+        }
+        return json_decode($response);
+       # sleep(7);
+       # return '2203';
+        return 'x';
+    }
+
+
 
     private function charismaSoap(){
 
@@ -92,9 +111,10 @@ class OrderController extends Controller
     public function newOrder($id, $order_id)
     {
         $response = $this->getOrderArray($id, $order_id);
-        #var_dump($response);
 
-        return view('orders.newOrder',['woocommerceOrder'=>$response]);
+        $prices_table_last_update= DB::table('options')->where('var_name','prices_table_last_update')->first(); // si projectid-ul trebuie aici... id
+
+        return view('orders.newOrder',['woocommerceOrder'=>$response,'prices_table_last_update'=>$prices_table_last_update->var_value,'project_id'=>$id]);
     }
 
     /**

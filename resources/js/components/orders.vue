@@ -4,10 +4,9 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Example Component</div>
-
+                    <div class="card-header">Example Component ss</div>
                     <div class="card-body">
-                            <table class="table">
+                        <table class="table">
                             <tr v-for="order in orders.data">
                                 <td>
                                     {{order.order_id}}
@@ -26,7 +25,7 @@
                                 </td>
                             </tr>
 
-                            </table>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -49,7 +48,7 @@
         },
         props:[
             'text',
-           //'name',
+            //'name',
         ],
 
         data: function(){
