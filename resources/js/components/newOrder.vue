@@ -105,7 +105,7 @@
         </div>
 
         {{theroute()}}<br />
-        ss{{project_id}}aa
+        ss{{project_id.project_id}}aa
     </div>
 </template>
 
@@ -160,7 +160,7 @@
 
             },
             refreshPreturi: function () {
-                axios.get('/charismapp/public/rewriteDatabasePrices', {})
+                axios.get('/charismapp/public/rewriteDatabasePrices/'+this.project_id.project_id, {})
                     .then(response => {
                         //console.log(response);
 

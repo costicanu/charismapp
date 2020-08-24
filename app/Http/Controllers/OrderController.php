@@ -55,7 +55,7 @@ class OrderController extends Controller
     {
         $project = DB::table('projects')->where('id', '=', $project_id)->first();
         $username_password = 'consumer_key=' . $project->username . '&consumer_secret=' . $project->password;
-        $url = $project->url.'/wc-api/v3/orders/' . $order_id . '/?' . $username_password;
+        $url = $project->url . '/wc-api/v3/orders/' . $order_id . '/?' . $username_password;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
@@ -67,36 +67,92 @@ class OrderController extends Controller
     }
 
 
-
-    public function rewriteDatabasePrices($project_id=1){
-        $client=new CharismaSoap($project_id);
-        $price_list=$client->getPrice([ 'PriceListDate' => date('Y-m-d')]);
-        $charisma_prices=new PricesCharisma($project_id);
+    public function rewriteDatabasePrices($project_id = 1)
+    {
+        $client = new CharismaSoap($project_id);
+        $price_list = $client->getPrice(['PriceListDate' => date('Y-m-d')]);
+        $charisma_prices = new PricesCharisma($project_id);
         $charisma_prices->rewriteDatabasePrices($price_list);
-        DB::table('options')->where(['var_name'=>'prices_table_last_update','project_id'=>$project_id])->update(['var_value'=> date('Y-m-d')]);
+        DB::table('options')->where(['var_name' => 'prices_table_last_update', 'project_id' => $project_id])->update(['var_value' => date('Y-m-d')]);
 
     }
 
-    public function test(){
-        $project = DB::table('projects')->where('id', '=', $project_id)->first();
-        $username_password = 'consumer_key=' . $project->username . '&consumer_secret=' . $project->password;
-        $url = $project->url.'/wc-api/v3/orders/' . $order_id . '/?' . $username_password;
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            //If an error occured, throw an Exception.
-            throw new Exception(curl_error($ch));
+    public function test()
+    {
+        $project_id = 1;
+        $client = new CharismaSoap($project_id);
+        $nomenclator = $client->getItem();
+        $nomenclator = $nomenclator->ItemList;
+        DB::table('nomenclator')->truncate();
+        $i = 0;
+        $dataContainer = [];
+        foreach ($nomenclator as $each) {
+            $i++;
+            $data = [];
+            $data['ItemId'] = $each->ItemId;
+            $data['ItemCode'] = $each->ItemCode;
+            $data['ItemName'] = $each->ItemName;
+            $data['ItemTypeId'] = $each->ItemTypeId;
+            $data['ItemType'] = $each->ItemType;
+            $data['MeasuringUnitId'] = $each->MeasuringUnitId;
+            $data['MeasuringUnitName'] = $each->MeasuringUnitName;
+            $data['MeasuringUnitCode'] = $each->MeasuringUnitCode;
+            $data['VATId'] = $each->VATId;
+            $data['VATPercent'] = $each->VATPercent;
+            $data['IsValid'] = $each->IsValid;
+            $data['IsStockable'] = $each->IsStockable;
+            $data['IsComposite'] = $each->IsComposite;
+
+      
+
+
+            $data['Grupa']=$data['CategorieArticol']=$data['Familie']=$data['Subfamilie']=$data['Brand']=''; // initializam cu nimic pentru a nu genera erori la inserare in baza de date
+            /*
+            if (isset($each->ItemProperties)) {
+                $data['Grupa'] = isset($each->ItemProperties[0]->PropertyValue) ? $each->ItemProperties[0]->PropertyValue : '';
+                $data['CategorieArticol'] = isset($each->ItemProperties[2]->PropertyValue) ? $each->ItemProperties[2]->PropertyValue : '';
+                $data['Familie'] = isset($each->ItemProperties[3]->PropertyValue) ? $each->ItemProperties[3]->PropertyValue : '';
+                $data['Subfamilie'] = isset($each->ItemProperties[4]->PropertyValue) ? $each->ItemProperties[4]->PropertyValue : '';
+                $data['Brand'] = isset($each->ItemProperties[5]->PropertyValue) ? $each->ItemProperties[5]->PropertyValue : '';
+            }
+            */
+
+            $data['ConversionRate']=$data['BaseMeasuringUnitId']=$data['BaseMeasuringUnitName']=$data['BaseMeasuringUnitCode']='';// initializam cu nimic pentru a nu genera erori la inserare in baza de date
+            if (isset($each->ItemMeasuringUnits)) {
+                $data['ConversionRate'] = isset($each->ItemMeasuringUnits->ConversionRate)?$each->ItemMeasuringUnits->ConversionRate:'';
+                $data['BaseMeasuringUnitId'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitId)?$each->ItemMeasuringUnits->BaseMeasuringUnitId:'';
+                $data['BaseMeasuringUnitName'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitName)?$each->ItemMeasuringUnits->BaseMeasuringUnitName:'';
+                $data['BaseMeasuringUnitCode'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitCode)?$each->ItemMeasuringUnits->BaseMeasuringUnitCode:'';
+            }
+
+            $data['BarCodeId']=$data['SiteId']=$data['BarCode']=$data['IsVariable']='';
+            if (isset($each->ItemBarCodes)) {
+                $data['BarCodeId'] = isset($each->ItemBarCodes->BarCodeId) ? $each->ItemBarCodes->BarCodeId : '';
+                $data['SiteId'] = isset($each->ItemBarCodes->SiteId) ? $each->ItemBarCodes->SiteId : '';
+                $data['BarCode'] = isset($each->ItemBarCodes->BarCode) ? $each->ItemBarCodes->BarCode : '';
+                $data['IsVariable'] = isset($each->ItemBarCodes->IsVariable) ? $each->ItemBarCodes->IsVariable : '';
+
+            }
+
+            $dataContainer[] = $data;
+            if ($i % 1500 == 0) {
+                DB::table('nomenclator')->insert($dataContainer);
+                $dataContainer = [];
+            }
+            #$data['']=$each->;
+
+
         }
-        return json_decode($response);
-       # sleep(7);
-       # return '2203';
-        return 'x';
+
+        if (count($dataContainer) > 0) {
+            DB::table('nomenclator')->insert($dataContainer);
+        }
+
     }
 
 
-
-    private function charismaSoap(){
+    private function charismaSoap()
+    {
 
     }
 
@@ -112,9 +168,9 @@ class OrderController extends Controller
     {
         $response = $this->getOrderArray($id, $order_id);
 
-        $prices_table_last_update= DB::table('options')->where('var_name','prices_table_last_update')->first(); // si projectid-ul trebuie aici... id
+        $prices_table_last_update = DB::table('options')->where('var_name', 'prices_table_last_update')->first(); // si projectid-ul trebuie aici... id
 
-        return view('orders.newOrder',['woocommerceOrder'=>$response,'prices_table_last_update'=>$prices_table_last_update->var_value,'project_id'=>$id]);
+        return view('orders.newOrder', ['woocommerceOrder' => $response, 'prices_table_last_update' => $prices_table_last_update->var_value, 'project_id' => $id]);
     }
 
     /**

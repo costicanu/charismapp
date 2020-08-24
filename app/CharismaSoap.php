@@ -23,8 +23,8 @@ class CharismaSoap extends Model
         ])->first();
 
         $charisma_application_id = DB::table('options')->where([
-            ['var_name','=','charisma_application_id'],
-            ['project_id','=',$project_id],
+            ['var_name', '=', 'charisma_application_id'],
+            ['project_id', '=', $project_id],
         ])->first();
 
         $this->client = new SoapClient($wsdl_file_url->var_value, ['trace' => true, 'cache_wsdl' => WSDL_CACHE_NONE]);
@@ -37,9 +37,17 @@ class CharismaSoap extends Model
      * @param array $data Array of values to send to getPrice SOAP method
      */
     public function getPrice($data)
-    {  
+    {
         return $this->client->getPrice($data);
     }
 
+    /*
+     * @param array $data Array of values to send to getItem SOAP method
+     * @return Object  returns a Charisma SOAP object, returns the entire list of products from CharismaZoomania SQL database (entire nomenclator)
+     */
+    public function getItem($data=null)
+    {
+        return $this->client->GetItem($data);
+    }
 
 }

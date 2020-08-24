@@ -2053,7 +2053,7 @@ __webpack_require__.r(__webpack_exports__);
     refreshPreturi: function refreshPreturi() {
       var _this = this;
 
-      axios.get('/charismapp/public/rewriteDatabasePrices', {}).then(function (response) {//console.log(response);
+      axios.get('/charismapp/public/rewriteDatabasePrices/' + this.project_id.project_id, {}).then(function (response) {//console.log(response);
         //console.log(this.orders.data);
       }).then(function (response) {
         _this.loading_prices = 0;
@@ -37870,7 +37870,7 @@ var render = function() {
     ]),
     _vm._v("\n\n    " + _vm._s(_vm.theroute())),
     _c("br"),
-    _vm._v("\n    ss" + _vm._s(_vm.project_id) + "aa\n")
+    _vm._v("\n    ss" + _vm._s(_vm.project_id.project_id) + "aa\n")
   ])
 }
 var staticRenderFns = [
