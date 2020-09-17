@@ -15,7 +15,7 @@ class CharismaSoap extends Model
     private $headerbody;
     private $header;
 
-    public function __construct($project_id)
+    public function __construct($project_id = 1)
     {
         $wsdl_file_url = DB::table('options')->where([
             ['var_name', '=', 'wsdl_file_url'],
@@ -27,7 +27,7 @@ class CharismaSoap extends Model
             ['project_id', '=', $project_id],
         ])->first();
 
-        $this->client = new SoapClient($wsdl_file_url->var_value, ['trace' => true, 'cache_wsdl' => WSDL_CACHE_NONE]);
+        $this->client = new SoapClient($wsdl_file_url->var_value, ['trace' =>1, 'cache_wsdl' => WSDL_CACHE_NONE]);
         $this->headerbody = ['ApplicationId' => $charisma_application_id->var_value];
         $this->header = new SoapHeader('totalsoft.charisma.commonMessages', 'IdentificationMessage', $this->headerbody);
         $this->client->__setSoapHeaders($this->header);
@@ -45,9 +45,33 @@ class CharismaSoap extends Model
      * @param array $data Array of values to send to getItem SOAP method
      * @return Object  returns a Charisma SOAP object, returns the entire list of products from CharismaZoomania SQL database (entire nomenclator)
      */
-    public function getItem($data=null)
+    public function getItem($data = null)
     {
         return $this->client->GetItem($data);
+    }
+
+    public function createPartner($data = null)
+    {
+        return $this->client->CreatePartner($data);
+    }
+
+    /*
+     * @param $data Array containing Romanian FiscalRegistration. Example: ['FiscalRegistration'=>'RO24797258']
+     * @return Object an object returned by Charisma Example:
+     */
+    public function getPartner($data)
+    {
+        return $this->client->GetPartner($data);
+    }
+
+    public function getCity()
+    {
+        return $this->client->GetCity();
+    }
+
+    public function createOrder($data)
+    {
+        return $this->client->CreateOrder($data);
     }
 
 }

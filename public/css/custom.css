@@ -37,3 +37,61 @@
   font-weight: bold;
 }
 
+.orange {
+  color: orange;
+}
+
+.price-warning {
+  color: red;
+  font-size: 30px;
+}
+
+.blinking {
+  -webkit-animation: blinkingText 0.3s infinite;
+          animation: blinkingText 0.3s infinite;
+}
+
+@-webkit-keyframes blinkingText {
+  0% {
+    color: red;
+  }
+
+  49% {
+    color: transparent;
+  }
+
+  50% {
+    color: transparent;
+  }
+
+  99% {
+    color: transparent;
+  }
+
+  100% {
+    color: red;
+  }
+}
+
+@keyframes blinkingText {
+  0% {
+    color: red;
+  }
+
+  49% {
+    color: transparent;
+  }
+
+  50% {
+    color: transparent;
+  }
+
+  99% {
+    color: transparent;
+  }
+
+  100% {
+    color: red;
+  }
+}
+

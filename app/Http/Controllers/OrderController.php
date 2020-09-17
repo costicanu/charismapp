@@ -31,16 +31,290 @@ class OrderController extends Controller
 
     }
 
+    public function companyExistsInCharisma($fiscalRegistration)
+    {
+        $client = new CharismaSoap(1);
+        $company = $client->getPartner(['FiscalRegistration' => $fiscalRegistration]);
+        var_dump($company);
+        if (!empty($company->PartnerList)) {
+            # return 1;
+        }
+        # return 0;
+    }
+
+
+    /*
+     * Get all the cities from Charisma and fill 'city_id' table with them
+     */
+    public function getCityIdFromCharisma()
+    {
+        DB::table('city_id')->truncate();
+        $client = new CharismaSoap(1);
+        $city_id_list = $client->getCity();
+        $city_id_list = $city_id_list->City;
+        $city_list = [];
+        $i = 0;
+
+        #echo '<pre>';var_dump($city_id_list);die();
+        foreach ($city_id_list as $each) {
+            $i++;
+            $city_list[$i]['CityCode'] = $each->CityCode;//json_decode(json_encode($each),true);
+            $city_list[$i]['CityId'] = $each->CityId;
+            $city_list[$i]['CityName'] = $each->CityName;
+            $city_list[$i]['DistrictId'] = !empty($each->DistrictId) ? $each->DistrictId : 'x';
+            $city_list[$i]['DistrictName'] = !empty($each->DistrictName) ? $each->DistrictName : 'x';
+
+            if ($i % 500 == 0) {
+                DB::table('city_id')->insert($city_list);
+                $city_list = [];
+                $i = 0;
+
+            }
+        }
+
+
+        DB::table('city_id')->insert($city_list);
+
+    }
+
+
+    /*
+     * Match Charisma city and
+     * @return Object contains the city info from Charisma
+     */
+    private function matchCity($city_name)
+    {
+        # Query-ul trebuie sa fie: select *,MATCH(CityName) AGAINST('Bucov') from city_id  where MATCH(CityName) AGAINST('Bucov')
+
+        $query = DB::table('city_id')
+            ->selectRaw("*,MATCH(CityName) AGAINST('$city_name')")
+            ->whereRaw("MATCH(CityName) AGAINST('$city_name')")
+            ->first();
+        if (empty($query)) {
+            return 0;
+        }
+        return $query;
+    }
+
+
+    public function createCharismaOrder($user_id_charisma, $order_array)
+    {
+        print($user_id_charisma);
+        die();
+        echo 'test';
+        $client = new CharismaSoap();
+        $data = [
+
+            'OrderReq' => [
+                'ExternalId' => '3345',
+                'PartnerId' => '228587',
+                'BillingAddressId' => '234010',
+                'OrderDate' => '2020-09-11',
+                'PaymentType' => 'Card',
+                'Comments' => 'nu sunt',
+                'OrderState' => 'Draft',
+                'ItemList' => [
+                    [
+                        'ExternalId' => '12345678',
+                        'ItemId' => '3998',
+                        'ItemName' => 'Name here...xxx',
+                        'Quantity' => '5',
+                        'Price' => '10',
+                        'PriceWithVAT' => '12.4',
+                        'VATId' => '28',
+                        'Amount' => '50',
+                        'VATAmount' => '12',
+                        'IsPriceWithVAT' => 'true',
+                        'CurrencyId' => '25',
+                        'DeliveryAddressId' => '234010',
+                    ],
+                    [
+                        'ExternalId' => '14545',
+                        'ItemId' => '1946',
+                        'ItemName' => 'Name here...xxx',
+                        'Quantity' => '8',
+                        'Price' => '10',
+                        'PriceWithVAT' => '12.4',
+                        'VATId' => '28',
+                        'Amount' => '50',
+                        'VATAmount' => '12',
+                        'IsPriceWithVAT' => 'true',
+                        'CurrencyId' => '25',
+                        'DeliveryAddressId' => '234010',
+                    ]
+                ],
+
+
+            ]
+        ];
+
+
+        $order_response = $client->createOrder($data);
+        var_dump($order_response);
+
+
+    }
+
+    private function getItemFromCharisma($cod_charisma){
+        $query=DB::table('nomenclator')->where('ItemCode','=',$cod_charisma)->leftJoin('prices_charisma','nomenclator.ItemId','=','prices_charisma.ItemId')->first();
+        return $query;
+    }
+
+    public function adaugaComandaPersoanaFizica(Request $request)
+    {
+        $woocommerce_order = $request->post();
+        #echo gettype($woocommerce_order);
+        #echo '<pre>';var_dump($woocommerce_order['woocommerce_order']['order']);
+        $match = $this->matchCity($woocommerce_order['woocommerce_order']['order']['shipping_address']['city']);
+        $client = new CharismaSoap();
+        $data = ['PartnerReq' => ['ExternalId' => $woocommerce_order['woocommerce_order']['order']['id'], // nu are, ii pun id-ul 'extern', adica id user woocommerce,
+            'PartnerType' => 'PF',
+            'PartnerName' => $woocommerce_order['woocommerce_order']['order']['billing_address']['last_name'] . ' ' . $woocommerce_order['woocommerce_order']['order']['billing_address']['first_name'],
+            'FiscalRegistration' => $woocommerce_order['woocommerce_order']['order']['id'], // nu are, ii pun id-ul 'extern', adica id user woocommerce,
+            //'ComercialRegistration' => 'J40/23/1991',
+            'IsVATPayer' => 'true',
+            'Email' => $woocommerce_order['woocommerce_order']['order']['billing_address']['email'],
+
+            'DeliveryAddressList' => [
+                'Name' => $woocommerce_order['woocommerce_order']['order']['shipping_address']['address_2'],
+                'Street' => $woocommerce_order['woocommerce_order']['order']['shipping_address']['address_1'],
+                'LocalNumber' => '0',
+                'City' => ['CityId' => $match->CityId,
+                    'CityName' => $woocommerce_order['woocommerce_order']['order']['shipping_address']['city'],
+                ],
+            ],
+
+        ]];
+        $partner = $client->createPartner($data);
+
+        $partner_id = $partner->PartnerResp->PartnerId;
+        $billing_address_id = $partner->PartnerResp->DeliveryAddressList->PartnerAddressId;
+        $produse = $woocommerce_order['woocommerce_order']['order']['line_items'];
+        $ItemList = [];
+        $i = 0;
+        foreach ($produse as $each) {
+            $charisma_item=$this->getItemFromCharisma($each['sku']);
+
+            $ItemList[$i] = ['ExternalId' => $each['id'],
+                'ItemId' => $charisma_item->ItemId,
+                'ItemName' => $each['name'],
+                'Quantity' => $each['quantity'],
+                'Price' => 20,//$each['price']+$each['price']*($charisma_item->VATId/100),
+                'PriceWithVAT' => 100,// $each['price'],
+                'VATId' => $charisma_item->VATId,
+                'Amount' => $each['subtotal'],
+                'VATAmount' => 0,//$charisma_item->VATPercent/100*$each['price']*$each['quantity'],
+                'IsPriceWithVAT' => 'true',
+                'CurrencyId' => $charisma_item->CurrencyId,
+                'DeliveryAddressId' => $billing_address_id,
+            ];
+            $i++;
+        }
+
+        $PaymentType = 'Card';
+        if ($woocommerce_order['woocommerce_order']['order']['payment_details']['method_title'] == 'Plata la primirea coletului') {
+            $PaymentType = 'Courier';
+        }
+
+
+       # $client = new CharismaSoap();
+        $data = [
+
+            'OrderReq' => [
+                'ExternalId' => $woocommerce_order['woocommerce_order']['order']['id'],
+                'PartnerId' => '229238',
+                'BillingAddressId' => '235040',
+                'OrderDate' => '2020-09-17',
+                'PaymentType' => 'Card',
+                'Comments' => 'nu sunt',
+                'OrderState' => 'Draft',
+                'ItemList' =>$ItemList,
+
+
+            ]
+        ];
+
+        #var_dump($data);die();
+        $order_response = $client->createOrder($data);
+        echo '<pre>';var_dump($order_response);
+        echo '==========================';
+        var_dump($ItemList);
+
+
+    }
+
+    /*
+    public function addClientToCharisma($pf_data)
+    {
+
+        $cnp = '1850709297247';
+
+        $client = new CharismaSoap();
+        $data = ['PartnerReq' => ['ExternalId' => 'ext01',
+            'PartnerType' => 'PF',
+            'PartnerName' => 'Persoanaxxl',
+            'FiscalRegistration' => '1850709297247',
+            //'ComercialRegistration' => 'J40/23/1991',
+            'IsVATPayer' => 'true',
+            'Email' => 'xxlcontact3@firma.ro',
+
+            'DeliveryAddressList' => [
+                'Name' => 'Adresa de livrare',
+                'Street' => 'Sos Armatei',
+                'LocalNumber' => '15',
+                'City' => ['CityId' => '420',
+                    'CityName' => 'Bucuresti Sector 4',
+                ],
+            ],
+
+        ]];
+        $partner = $client->createPartner($data);
+        var_dump($partner);
+    }
+
+    */
+    public function test()
+    {
+        $project_id = 1;
+
+        $client = new CharismaSoap($project_id);
+        $data = ['PartnerReq' => ['ExternalId' => 'ext01',
+            'PartnerType' => 'PJ',
+            'PartnerName' => 'Firma 7 SRL',
+            'FiscalRegistration' => 'RO12345',
+            'ComercialRegistration' => 'J40/23/1991',
+            'IsVATPayer' => 'false',
+            'Email' => 'contact5@firma.ro',
+            'DeliveryAddressList' => [
+                'Name' => 'Adresa de livrare',
+                'Street' => 'Sos Armatei',
+                'LocalNumber' => '15',
+                'City' => ['CityId' => '420',
+                    'CityName' => 'Bucuresti Sector 4',
+                ],
+            ],
+            'ContactInfoList' => [
+                'PersonName' => 'Popescu Ion',
+                'Email' => 'pion@firma.ro',
+                'MobileNumber' => '0744565897'
+
+            ]
+            /*
+                ''=>'',
+            ''=>'',
+            ''=>'',
+                */
+        ]];
+        $partner = $client->createPartner($data);
+        var_dump($partner);
+    }
+
     public function listOrders()
     {
         $orders = DB::table('orders')
             ->join('customers', 'orders.customer_id', '=', 'customers.id')
-            //->ord
             ->paginate(20)
-            //->first()
             ->toArray();
-        # return $orders;
-        //return ['name'=>'test1','price'=>'price1'];
 
         return $orders;
     }
@@ -77,9 +351,8 @@ class OrderController extends Controller
 
     }
 
-    public function test()
+    public function rewriteDatabaseNomenclator($project_id = 1)
     {
-        $project_id = 1;
         $client = new CharismaSoap($project_id);
         $nomenclator = $client->getItem();
         $nomenclator = $nomenclator->ItemList;
@@ -103,10 +376,7 @@ class OrderController extends Controller
             $data['IsStockable'] = $each->IsStockable;
             $data['IsComposite'] = $each->IsComposite;
 
-      
-
-
-            $data['Grupa']=$data['CategorieArticol']=$data['Familie']=$data['Subfamilie']=$data['Brand']=''; // initializam cu nimic pentru a nu genera erori la inserare in baza de date
+            $data['Grupa'] = $data['CategorieArticol'] = $data['Familie'] = $data['Subfamilie'] = $data['Brand'] = ''; // initializam cu nimic pentru a nu genera erori la inserare in baza de date
             /*
             if (isset($each->ItemProperties)) {
                 $data['Grupa'] = isset($each->ItemProperties[0]->PropertyValue) ? $each->ItemProperties[0]->PropertyValue : '';
@@ -117,15 +387,15 @@ class OrderController extends Controller
             }
             */
 
-            $data['ConversionRate']=$data['BaseMeasuringUnitId']=$data['BaseMeasuringUnitName']=$data['BaseMeasuringUnitCode']='';// initializam cu nimic pentru a nu genera erori la inserare in baza de date
+            $data['ConversionRate'] = $data['BaseMeasuringUnitId'] = $data['BaseMeasuringUnitName'] = $data['BaseMeasuringUnitCode'] = '';// initializam cu nimic pentru a nu genera erori la inserare in baza de date
             if (isset($each->ItemMeasuringUnits)) {
-                $data['ConversionRate'] = isset($each->ItemMeasuringUnits->ConversionRate)?$each->ItemMeasuringUnits->ConversionRate:'';
-                $data['BaseMeasuringUnitId'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitId)?$each->ItemMeasuringUnits->BaseMeasuringUnitId:'';
-                $data['BaseMeasuringUnitName'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitName)?$each->ItemMeasuringUnits->BaseMeasuringUnitName:'';
-                $data['BaseMeasuringUnitCode'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitCode)?$each->ItemMeasuringUnits->BaseMeasuringUnitCode:'';
+                $data['ConversionRate'] = isset($each->ItemMeasuringUnits->ConversionRate) ? $each->ItemMeasuringUnits->ConversionRate : '';
+                $data['BaseMeasuringUnitId'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitId) ? $each->ItemMeasuringUnits->BaseMeasuringUnitId : '';
+                $data['BaseMeasuringUnitName'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitName) ? $each->ItemMeasuringUnits->BaseMeasuringUnitName : '';
+                $data['BaseMeasuringUnitCode'] = isset($each->ItemMeasuringUnits->BaseMeasuringUnitCode) ? $each->ItemMeasuringUnits->BaseMeasuringUnitCode : '';
             }
 
-            $data['BarCodeId']=$data['SiteId']=$data['BarCode']=$data['IsVariable']='';
+            $data['BarCodeId'] = $data['SiteId'] = $data['BarCode'] = $data['IsVariable'] = '';
             if (isset($each->ItemBarCodes)) {
                 $data['BarCodeId'] = isset($each->ItemBarCodes->BarCodeId) ? $each->ItemBarCodes->BarCodeId : '';
                 $data['SiteId'] = isset($each->ItemBarCodes->SiteId) ? $each->ItemBarCodes->SiteId : '';
@@ -148,6 +418,8 @@ class OrderController extends Controller
             DB::table('nomenclator')->insert($dataContainer);
         }
 
+        DB::table('options')->where(['var_name' => 'nomenclator_table_last_update', 'project_id' => $project_id])->update(['var_value' => date('Y-m-d')]);
+
     }
 
 
@@ -156,6 +428,23 @@ class OrderController extends Controller
 
     }
 
+    /**
+     * @param $skus array Array of sku's
+     * @return array of skus and Charisma prices
+     */
+    private function getCharismaPrices($skus)
+    {
+        $prices = DB::table('nomenclator')->select(['nomenclator.ItemId', 'nomenclator.ItemCode', 'nomenclator.ItemName', 'prices_charisma.PriceWithVAT'])
+            ->whereIn('ItemCode', $skus)
+            ->leftJoin('prices_charisma', 'nomenclator.ItemId', '=', 'prices_charisma.ItemId')
+            ->get();
+
+        $price_array = [];
+        foreach ($prices as $price) {
+            $price_array[$price->ItemCode] = $price->PriceWithVAT;
+        }
+        return $price_array;
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -169,8 +458,24 @@ class OrderController extends Controller
         $response = $this->getOrderArray($id, $order_id);
 
         $prices_table_last_update = DB::table('options')->where('var_name', 'prices_table_last_update')->first(); // si projectid-ul trebuie aici... id
+        $nomenclator_table_last_update = DB::table('options')->where('var_name', 'nomenclator_table_last_update')->first();
 
-        return view('orders.newOrder', ['woocommerceOrder' => $response, 'prices_table_last_update' => $prices_table_last_update->var_value, 'project_id' => $id]);
+
+        $products_from_order = $response->order->line_items;
+        $skus = [];
+        foreach ($products_from_order as $each_product) {
+            $skus[] = $each_product->sku;
+        }
+
+        $charisma_prices = $this->getCharismaPrices($skus);
+
+
+        return view('orders.newOrder', ['woocommerceOrder' => $response,
+                'prices_table_last_update' => $prices_table_last_update->var_value,
+                'nomenclator_table_last_update' => $nomenclator_table_last_update,
+                'charisma_prices' => $charisma_prices,
+                'project_id' => $id]
+        );
     }
 
     /**

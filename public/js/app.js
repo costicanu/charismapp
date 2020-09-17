@@ -2022,6 +2022,74 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {// console.log('youhooo');
     // console.log(this.woocommerce_order.order.line_items);
@@ -2037,12 +2105,16 @@ __webpack_require__.r(__webpack_exports__);
       */
   },
   computed: {},
-  props: ['text', 'woocommerce_order', 'prices_table_last_update', 'project_id' //'name',
+  props: ['text', 'woocommerce_order', 'prices_table_last_update', 'project_id', 'nomenclator_table_last_update', 'charisma_prices' //'name',
   ],
   data: function data() {
     return {
       test: null,
-      loading_prices: 0
+      loading_prices: 0,
+      loading_nomenclator: 0,
+      loading_verifica_companie: 0,
+      companie_in_baza_de_date: 0,
+      charisma_user_id: 0
     };
   },
   created: function created() {},
@@ -2060,6 +2132,39 @@ __webpack_require__.r(__webpack_exports__);
         location.reload(true);
       });
       this.loading_prices = 1; // punem sa astepte
+    },
+    refreshNomenclator: function refreshNomenclator() {
+      var _this2 = this;
+
+      axios.get('/charismapp/public/rewriteDatabaseNomenclator/' + this.project_id.project_id, {}).then(function (response) {
+        _this2.loading_nomenclator = 0;
+        location.reload(true);
+      });
+      this.loading_nomenclator = 1;
+    },
+    verifica_companie: function verifica_companie() {
+      this.loading_verifica_companie = 1;
+      var self = this;
+      axios.get('/charismapp/public/companyExistsInCharisma/' + this.woocommerce_order.order['CUI'].replace(/[^a-z0-9]/gi, ''), {}).then(function (response) {
+        self.loading_verifica_companie = 0;
+        console.log(response.data);
+
+        if (response.data) {
+          // if company not in the Charisma database
+          self.companie_in_baza_de_date = 1;
+        }
+      });
+    },
+    adauga_comanda_persoana_fizica: function adauga_comanda_persoana_fizica() {
+      var raid = axios.post('/charismapp/public/adaugaComandaPersoanaFizica', {
+        woocommerce_order: this.woocommerce_order
+      }).then(function (response) {
+        self.charisma_user_id = response.data; // console.log(response.data);
+        //return response.data;
+      });
+    },
+    adauga_xxl: function adauga_xxl() {
+      console.log('IT WORKS!!!!');
     },
     theroute: function theroute() {
       return window.location.href;
@@ -37684,194 +37789,345 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-7" }),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-md-6" }, [
-        _c("div", { staticClass: "card-body" }, [
-          _c("div", { staticClass: "prices-latest-update" }, [
-            _c(
-              "button",
-              {
-                attrs: { disabled: _vm.loading_prices == 1 },
-                on: {
-                  click: function($event) {
-                    return _vm.refreshPreturi()
+  return _c(
+    "div",
+    { staticClass: "container" },
+    [
+      _c("div", { staticClass: "row justify-content-center" }, [
+        _c("div", { staticClass: "col-md-6" }, [
+          _c(
+            "div",
+            {
+              staticClass: "card-body",
+              attrs: { id: "update-nomenclator-div" }
+            },
+            [
+              _c(
+                "button",
+                {
+                  attrs: { disabled: _vm.loading_nomenclator == 1 },
+                  on: {
+                    click: function($event) {
+                      return _vm.refreshNomenclator()
+                    }
                   }
-                }
-              },
-              [
-                _vm.loading_prices
-                  ? [
-                      _c("div", { staticClass: "loader" }),
-                      _vm._v(
-                        "\n                            Asteapta te rog, extrag preturile din Charisma\n                        "
-                      )
-                    ]
-                  : [
-                      _vm._v(
-                        "\n                            Reincarca Preturile\n                        "
-                      )
-                    ]
-              ],
-              2
-            ),
-            _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                "\n                        Ultimul update al preturilor din Charisma: "
+                },
+                [
+                  _vm.loading_nomenclator
+                    ? [
+                        _c("div", { staticClass: "loader" }),
+                        _vm._v(
+                          "\n                        Asteapta te rog, extrag nomenclatorul din Charisma\n                    "
+                        )
+                      ]
+                    : [
+                        _vm._v(
+                          "\n                        Reincarca Nomenclator\n                    "
+                        )
+                      ]
+                ],
+                2
               ),
-              _c("span", { staticClass: "bold" }, [
-                _vm._v(_vm._s(_vm.prices_table_last_update.date))
+              _vm._v(" "),
+              _c("p", [
+                _vm._v(
+                  "\n                    Ultimul update al nomenclatorului de produse din Charisma: "
+                ),
+                _c("span", { staticClass: "bold" }, [
+                  _vm._v(
+                    _vm._s(
+                      _vm.nomenclator_table_last_update
+                        .nomenclator_table_last_update.var_value
+                    )
+                  )
+                ])
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-md-6" }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c("div", { staticClass: "prices-latest-update" }, [
+              _c(
+                "button",
+                {
+                  attrs: { disabled: _vm.loading_prices == 1 },
+                  on: {
+                    click: function($event) {
+                      return _vm.refreshPreturi()
+                    }
+                  }
+                },
+                [
+                  _vm.loading_prices
+                    ? [
+                        _c("div", { staticClass: "loader" }),
+                        _vm._v(
+                          "\n                            Asteapta te rog, extrag preturile din Charisma\n                        "
+                        )
+                      ]
+                    : [
+                        _vm._v(
+                          "\n                            Reincarca Preturile\n                        "
+                        )
+                      ]
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c("p", [
+                _vm._v(
+                  "\n                        Ultimul update al preturilor din Charisma: "
+                ),
+                _c("span", { staticClass: "bold" }, [
+                  _vm._v(_vm._s(_vm.prices_table_last_update.date))
+                ])
               ])
             ])
           ])
         ])
-      ])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-header" }, [
-            _vm._v("Example Component")
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "table",
-              { staticClass: "table-bordered" },
-              [
-                _c("tr", [
-                  _c("td", [_vm._v("Nume")]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v(
-                      _vm._s(
-                        _vm.woocommerce_order.order.billing_address.first_name
-                      ) +
-                        "\n                                " +
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-center" }, [
+        _c("div", { staticClass: "col-md-12" }, [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("Example Component")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body" }, [
+              _c(
+                "table",
+                { staticClass: "table-bordered" },
+                [
+                  _c("tr", [
+                    _c("td", [_vm._v("Nume")]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(
                         _vm._s(
-                          _vm.woocommerce_order.order.billing_address.last_name
+                          _vm.woocommerce_order.order.billing_address.first_name
                         ) +
-                        "\n                            "
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("tr", [
-                  _c("td", [_vm._v("Id comanda:")]),
+                          "\n                                " +
+                          _vm._s(
+                            _vm.woocommerce_order.order.billing_address
+                              .last_name
+                          ) +
+                          "\n                            "
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("tr", [
+                    _c("td", [_vm._v("Id comanda:")]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(
+                        " " + _vm._s(_vm.woocommerce_order.order.order_number)
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("tr", [
+                    _c("td", [_vm._v("Email Pers Fizica")]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(_vm._s(_vm.woocommerce_order.order.customer.email))
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm.woocommerce_order.order["Nume Companie"]
+                    ? [
+                        _c("tr", [
+                          _vm._m(0),
+                          _vm._v(" "),
+                          _c("td", [
+                            _vm._v(
+                              _vm._s(
+                                _vm.woocommerce_order.order["Nume Companie"]
+                              )
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", [_vm._v("CUI")]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _vm._v(_vm._s(_vm.woocommerce_order.order["CUI"]))
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", [_vm._v("Registrul Comertului")]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _vm._v(
+                              _vm._s(
+                                _vm.woocommerce_order.order[
+                                  "Registrul Comertului"
+                                ]
+                              )
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", [_vm._v("Email companie")]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _vm._v(
+                              _vm._s(
+                                _vm.woocommerce_order.order.billing_address
+                                  .email
+                              )
+                            )
+                          ])
+                        ])
+                      ]
+                    : _vm._e()
+                ],
+                2
+              ),
+              _vm._v(
+                "\n\n\n                    " +
+                  _vm._s(_vm.woocommerce_order) +
+                  "\n\n                "
+              )
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-center" }, [
+        _c("div", { staticClass: "col-md-12" }, [
+          _c("h2", [_vm._v("Produse:")]),
+          _vm._v(" "),
+          _c(
+            "table",
+            { staticClass: "table" },
+            [
+              _vm._m(1),
+              _vm._v(" "),
+              _vm._l(this.woocommerce_order.order.line_items, function(
+                product
+              ) {
+                return _c("tr", [
+                  _c("td", [_vm._v(_vm._s(product.sku))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(product.name))]),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    [
+                      _c("span", { staticClass: "product-price" }, [
+                        _vm._v(_vm._s(product.price))
+                      ]),
+                      _vm._v(" "),
+                      _vm.charisma_prices.charisma_prices[product.sku] !=
+                      product.price
+                        ? [
+                            _c(
+                              "span",
+                              { staticClass: "price-warning blinking" },
+                              [_vm._v("⚠")]
+                            )
+                          ]
+                        : _vm._e()
+                    ],
+                    2
+                  ),
                   _vm._v(" "),
                   _c("td", [
-                    _vm._v(
-                      " " + _vm._s(_vm.woocommerce_order.order.order_number)
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("tr", [
-                  _c("td", [_vm._v("Email Pers Fizica")]),
+                    _c("span", { staticClass: "orange" }, [
+                      _vm._v(
+                        _vm._s(_vm.charisma_prices.charisma_prices[product.sku])
+                      )
+                    ])
+                  ]),
                   _vm._v(" "),
-                  _c("td", [
-                    _vm._v(_vm._s(_vm.woocommerce_order.order.customer.email))
-                  ])
-                ]),
-                _vm._v(" "),
-                _vm.woocommerce_order.order["Nume Companie"]
+                  _c("td", [_vm._v(_vm._s(product.quantity))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(product.subtotal))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(product.total))])
+                ])
+              })
+            ],
+            2
+          )
+        ])
+      ]),
+      _vm._v("\n\n    " + _vm._s(_vm.theroute())),
+      _c("br"),
+      _vm._v("\n    ss" + _vm._s(_vm.project_id.project_id) + "aa\n\n\n    "),
+      _vm.woocommerce_order.order["Nume Companie"]
+        ? [
+            _c(
+              "button",
+              {
+                staticClass: "button",
+                attrs: {
+                  id: "verifica_companie",
+                  disabled: _vm.loading_verifica_companie == 1
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.verifica_companie()
+                  }
+                }
+              },
+              [
+                _vm._v("\n            Verifica Companie\n            "),
+                _vm.loading_verifica_companie
                   ? [
-                      _c("tr", [
-                        _vm._m(0),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm._v(
-                            _vm._s(_vm.woocommerce_order.order["Nume Companie"])
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", [_vm._v("CUI")]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm._v(_vm._s(_vm.woocommerce_order.order["CUI"]))
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", [_vm._v("Registrul Comertului")]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm._v(
-                            _vm._s(
-                              _vm.woocommerce_order.order[
-                                "Registrul Comertului"
-                              ]
-                            )
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", [_vm._v("Email companie")]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm._v(
-                            _vm._s(
-                              _vm.woocommerce_order.order.billing_address.email
-                            )
-                          )
-                        ])
-                      ])
+                      _c("div", { staticClass: "loader" }),
+                      _vm._v(
+                        "\n                Asteapta te rog, verific compania\n            "
+                      )
                     ]
                   : _vm._e()
               ],
               2
             ),
-            _vm._v(
-              "\n\n\n                    " +
-                _vm._s(_vm.woocommerce_order) +
-                "\n\n                "
-            )
-          ])
-        ])
-      ])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("h2", [_vm._v("Produse:")]),
-        _vm._v(" "),
-        _c(
-          "table",
-          { staticClass: "table" },
-          [
-            _vm._m(1),
             _vm._v(" "),
-            _vm._l(this.woocommerce_order.order.line_items, function(product) {
-              return _c("tr", [
-                _c("td", [_vm._v(_vm._s(product.sku))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(product.name))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(product.price))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(product.quantity))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(product.subtotal))]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(product.total))])
-              ])
-            })
-          ],
-          2
-        )
-      ])
-    ]),
-    _vm._v("\n\n    " + _vm._s(_vm.theroute())),
-    _c("br"),
-    _vm._v("\n    ss" + _vm._s(_vm.project_id.project_id) + "aa\n")
-  ])
+            _vm.companie_in_baza_de_date ? [_vm._m(2)] : _vm._e()
+          ]
+        : [
+            _c(
+              "button",
+              {
+                staticClass: "button",
+                attrs: {
+                  id: "adauga_comanda_persoana_fizica",
+                  disabled: _vm.loading_verifica_companie == 1
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.adauga_comanda_persoana_fizica()
+                  }
+                }
+              },
+              [
+                _vm._v(
+                  "\n            Adauga Comanda In Charisma PF\n            "
+                ),
+                _vm.loading_verifica_companie
+                  ? [
+                      _c("div", { staticClass: "loader" }),
+                      _vm._v(
+                        "\n                Asteapta te rog, verific compania\n            "
+                      )
+                    ]
+                  : _vm._e()
+              ],
+              2
+            )
+          ]
+    ],
+    2
+  )
 }
 var staticRenderFns = [
   function() {
@@ -37891,11 +38147,27 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("th", [_vm._v("Pret Unitar")]),
       _vm._v(" "),
+      _c("th", [_vm._v("UnitarCharisma")]),
+      _vm._v(" "),
       _c("th", [_vm._v("Cantitate")]),
       _vm._v(" "),
       _c("th", [_vm._v("Subtotal")]),
       _vm._v(" "),
       _c("th", [_vm._v("Total cu taxe")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-12" }, [
+      _c("p", [
+        _vm._v(
+          "\n                    Compania exista deja in Charisma!\n                "
+        )
+      ]),
+      _vm._v(" "),
+      _c("p")
     ])
   }
 ]

@@ -25,3 +25,13 @@ Route::resource('orders','OrderController');
 Route::get('newOrder/{project_id}/{order_id}','OrderController@newOrder');
 Route::get('test/','OrderController@test');
 Route::get('rewriteDatabasePrices/{project_id}','OrderController@rewriteDatabasePrices');
+Route::get('rewriteDatabaseNomenclator/{project_id}','OrderController@rewriteDatabaseNomenclator');
+Route::get('companyExistsInCharisma/{cod_firma}','OrderController@companyExistsInCharisma');
+Route::get('getCityIdFromCharisma/','OrderController@getCityIdFromCharisma');
+
+Route::get('addClientToCharisma/','OrderController@addClientToCharisma');
+Route::get('matchCity/{city_name}','OrderController@matchCity');
+Route::get('addClientToCharisma','OrderController@addClientToCharisma');
+Route::get('createCharismaOrder/','OrderController@createCharismaOrder');
+Route::post('adaugaComandaPersoanaFizica/','OrderController@adaugaComandaPersoanaFizica');
+
