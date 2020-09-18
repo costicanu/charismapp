@@ -218,7 +218,7 @@
                 test: null,
                 loading_prices: 0,
                 loading_nomenclator: 0,
-                loading_verifica_companie: 0,
+                loading_verifica_companie: -1,
                 companie_in_baza_de_date: 0,
                 charisma_user_id:0,
 
@@ -266,6 +266,8 @@
                         self.loading_verifica_companie = 0;
                         console.log(response.data);
                         if (response.data) { // if company not in the Charisma database
+
+                            console.log(response.data);
                             self.companie_in_baza_de_date = 1;
                         }
 

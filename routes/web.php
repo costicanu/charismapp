@@ -34,4 +34,5 @@ Route::get('matchCity/{city_name}','OrderController@matchCity');
 Route::get('addClientToCharisma','OrderController@addClientToCharisma');
 Route::get('createCharismaOrder/','OrderController@createCharismaOrder');
 Route::post('adaugaComandaPersoanaFizica/','OrderController@adaugaComandaPersoanaFizica');
+Route::post('adaugaComandaPersoanaJuridica','OrderController@adaugaComandaPersoanaJuridica');
 

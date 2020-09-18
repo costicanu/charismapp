@@ -37,9 +37,9 @@ class OrderController extends Controller
         $company = $client->getPartner(['FiscalRegistration' => $fiscalRegistration]);
         var_dump($company);
         if (!empty($company->PartnerList)) {
-            # return 1;
+            return 1;
         }
-        # return 0;
+         return 0;
     }
 
 
@@ -155,8 +155,9 @@ class OrderController extends Controller
 
     }
 
-    private function getItemFromCharisma($cod_charisma){
-        $query=DB::table('nomenclator')->where('ItemCode','=',$cod_charisma)->leftJoin('prices_charisma','nomenclator.ItemId','=','prices_charisma.ItemId')->first();
+    private function getItemFromCharisma($cod_charisma)
+    {
+        $query = DB::table('nomenclator')->where('ItemCode', '=', $cod_charisma)->leftJoin('prices_charisma', 'nomenclator.ItemId', '=', 'prices_charisma.ItemId')->first();
         return $query;
     }
 
@@ -193,7 +194,7 @@ class OrderController extends Controller
         $ItemList = [];
         $i = 0;
         foreach ($produse as $each) {
-            $charisma_item=$this->getItemFromCharisma($each['sku']);
+            $charisma_item = $this->getItemFromCharisma($each['sku']);
 
             $ItemList[$i] = ['ExternalId' => $each['id'],
                 'ItemId' => $charisma_item->ItemId,
@@ -217,7 +218,7 @@ class OrderController extends Controller
         }
 
 
-       # $client = new CharismaSoap();
+        # $client = new CharismaSoap();
         $data = [
 
             'OrderReq' => [
@@ -228,7 +229,7 @@ class OrderController extends Controller
                 'PaymentType' => 'Card',
                 'Comments' => 'nu sunt',
                 'OrderState' => 'Draft',
-                'ItemList' =>$ItemList,
+                'ItemList' => $ItemList,
 
 
             ]
@@ -236,28 +237,30 @@ class OrderController extends Controller
 
         #var_dump($data);die();
         $order_response = $client->createOrder($data);
-        echo '<pre>';var_dump($order_response);
-        echo '==========================';
-        var_dump($ItemList);
-
-
+        #echo '<pre>';
+        #var_dump($order_response);
+        #echo '==========================';
+        #var_dump($ItemList);
     }
 
-    /*
-    public function addClientToCharisma($pf_data)
+
+    public function adaugaComandaPersoanaJuridica(Request $request)
     {
-
-        $cnp = '1850709297247';
-
+        $woocommerce_order = $request->post();
+        #echo gettype($woocommerce_order);
+        #echo '<pre>';var_dump($woocommerce_order['woocommerce_order']['order']);
+        $match = $this->matchCity($woocommerce_order['woocommerce_order']['order']['shipping_address']['city']);
         $client = new CharismaSoap();
-        $data = ['PartnerReq' => ['ExternalId' => 'ext01',
-            'PartnerType' => 'PF',
-            'PartnerName' => 'Persoanaxxl',
-            'FiscalRegistration' => '1850709297247',
-            //'ComercialRegistration' => 'J40/23/1991',
-            'IsVATPayer' => 'true',
-            'Email' => 'xxlcontact3@firma.ro',
 
+        var_dump($request); die();
+
+        $data = ['PartnerReq' => ['ExternalId' => 'ext01',
+            'PartnerType' => 'PJ',
+            'PartnerName' => 'Firma 7 SRL',
+            'FiscalRegistration' => 'RO12345',
+            'ComercialRegistration' => 'J40/23/1991',
+            'IsVATPayer' => 'false',
+            'Email' => 'contact5@firma.ro',
             'DeliveryAddressList' => [
                 'Name' => 'Adresa de livrare',
                 'Street' => 'Sos Armatei',
@@ -266,13 +269,27 @@ class OrderController extends Controller
                     'CityName' => 'Bucuresti Sector 4',
                 ],
             ],
+            'ContactInfoList' => [
+                'PersonName' => 'Popescu Ion',
+                'Email' => 'pion@firma.ro',
+                'MobileNumber' => '0744565897'
 
+            ]
+            /*
+                ''=>'',
+            ''=>'',
+            ''=>'',
+                */
         ]];
+
         $partner = $client->createPartner($data);
         var_dump($partner);
+
+
+
     }
 
-    */
+
     public function test()
     {
         $project_id = 1;
@@ -534,4 +551,38 @@ class OrderController extends Controller
     {
         //
     }
+
+
+    /*
+ public function addClientToCharisma($pf_data)
+ {
+
+     $cnp = '1850709297247';
+
+     $client = new CharismaSoap();
+     $data = ['PartnerReq' => ['ExternalId' => 'ext01',
+         'PartnerType' => 'PF',
+         'PartnerName' => 'Persoanaxxl',
+         'FiscalRegistration' => '1850709297247',
+         //'ComercialRegistration' => 'J40/23/1991',
+         'IsVATPayer' => 'true',
+         'Email' => 'xxlcontact3@firma.ro',
+
+         'DeliveryAddressList' => [
+             'Name' => 'Adresa de livrare',
+             'Street' => 'Sos Armatei',
+             'LocalNumber' => '15',
+             'City' => ['CityId' => '420',
+                 'CityName' => 'Bucuresti Sector 4',
+             ],
+         ],
+
+     ]];
+     $partner = $client->createPartner($data);
+     var_dump($partner);
+ }
+
+ */
+
+
 }

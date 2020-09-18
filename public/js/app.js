@@ -2112,7 +2112,7 @@ __webpack_require__.r(__webpack_exports__);
       test: null,
       loading_prices: 0,
       loading_nomenclator: 0,
-      loading_verifica_companie: 0,
+      loading_verifica_companie: -1,
       companie_in_baza_de_date: 0,
       charisma_user_id: 0
     };
@@ -2151,6 +2151,7 @@ __webpack_require__.r(__webpack_exports__);
 
         if (response.data) {
           // if company not in the Charisma database
+          console.log(response.data);
           self.companie_in_baza_de_date = 1;
         }
       });
