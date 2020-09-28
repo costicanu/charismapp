@@ -145,6 +145,13 @@
                 </template>
             </button>
 
+
+            <button id="adaugaComandaPersoanaJuridica" class="button" v-on:click="adaugaComandaPersoanaJuridica()">
+                Adauga Comanda Persoana Juridica
+
+            </button>
+
+
             <template v-if="companie_in_baza_de_date">
                 <div class="col-md-12">
                     <p>
@@ -218,9 +225,9 @@
                 test: null,
                 loading_prices: 0,
                 loading_nomenclator: 0,
-                loading_verifica_companie: -1,
+                loading_verifica_companie: 0,
                 companie_in_baza_de_date: 0,
-                charisma_user_id:0,
+                charisma_user_id: 0,
 
 
             }
@@ -266,8 +273,6 @@
                         self.loading_verifica_companie = 0;
                         console.log(response.data);
                         if (response.data) { // if company not in the Charisma database
-
-                            console.log(response.data);
                             self.companie_in_baza_de_date = 1;
                         }
 
@@ -276,9 +281,9 @@
             },
 
             adauga_comanda_persoana_fizica: function () {
-               var raid= axios.post('/charismapp/public/adaugaComandaPersoanaFizica',{woocommerce_order:this.woocommerce_order})
-                    .then(function (response){
-                        self.charisma_user_id=response.data;
+                axios.post('/charismapp/public/adaugaComandaPersoanaFizica', {woocommerce_order: this.woocommerce_order})
+                    .then(function (response) {
+                        self.charisma_user_id = response.data;
                         // console.log(response.data);
 
                         //return response.data;
@@ -286,7 +291,13 @@
 
             },
 
-            adauga_xxl: function(){
+            adaugaComandaPersoanaJuridica: function () {
+                axios.post('/charismapp/public/adaugaComandaPersoanaJuridica',{woocommerce_order: this.woocommerce_order})
+                    .then(function (response){
+                    });
+            },
+
+            adauga_xxl: function () {
                 console.log('IT WORKS!!!!');
             },
 

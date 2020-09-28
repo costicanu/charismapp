@@ -2090,6 +2090,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {// console.log('youhooo');
     // console.log(this.woocommerce_order.order.line_items);
@@ -2112,7 +2119,7 @@ __webpack_require__.r(__webpack_exports__);
       test: null,
       loading_prices: 0,
       loading_nomenclator: 0,
-      loading_verifica_companie: -1,
+      loading_verifica_companie: 0,
       companie_in_baza_de_date: 0,
       charisma_user_id: 0
     };
@@ -2151,18 +2158,22 @@ __webpack_require__.r(__webpack_exports__);
 
         if (response.data) {
           // if company not in the Charisma database
-          console.log(response.data);
           self.companie_in_baza_de_date = 1;
         }
       });
     },
     adauga_comanda_persoana_fizica: function adauga_comanda_persoana_fizica() {
-      var raid = axios.post('/charismapp/public/adaugaComandaPersoanaFizica', {
+      axios.post('/charismapp/public/adaugaComandaPersoanaFizica', {
         woocommerce_order: this.woocommerce_order
       }).then(function (response) {
         self.charisma_user_id = response.data; // console.log(response.data);
         //return response.data;
       });
+    },
+    adaugaComandaPersoanaJuridica: function adaugaComandaPersoanaJuridica() {
+      axios.post('/charismapp/public/adaugaComandaPersoanaJuridica', {
+        woocommerce_order: this.woocommerce_order
+      }).then(function (response) {});
     },
     adauga_xxl: function adauga_xxl() {
       console.log('IT WORKS!!!!');
@@ -38091,6 +38102,24 @@ var render = function() {
                   : _vm._e()
               ],
               2
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "button",
+                attrs: { id: "adaugaComandaPersoanaJuridica" },
+                on: {
+                  click: function($event) {
+                    return _vm.adaugaComandaPersoanaJuridica()
+                  }
+                }
+              },
+              [
+                _vm._v(
+                  "\n            Adauga Comanda Persoana Juridica\n\n        "
+                )
+              ]
             ),
             _vm._v(" "),
             _vm.companie_in_baza_de_date ? [_vm._m(2)] : _vm._e()

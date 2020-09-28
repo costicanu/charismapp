@@ -39,7 +39,7 @@ class OrderController extends Controller
         if (!empty($company->PartnerList)) {
             return 1;
         }
-         return 0;
+        return 0;
     }
 
 
@@ -191,20 +191,20 @@ class OrderController extends Controller
         $partner_id = $partner->PartnerResp->PartnerId;
         $billing_address_id = $partner->PartnerResp->DeliveryAddressList->PartnerAddressId;
         $produse = $woocommerce_order['woocommerce_order']['order']['line_items'];
+
         $ItemList = [];
         $i = 0;
         foreach ($produse as $each) {
             $charisma_item = $this->getItemFromCharisma($each['sku']);
-
             $ItemList[$i] = ['ExternalId' => $each['id'],
                 'ItemId' => $charisma_item->ItemId,
                 'ItemName' => $each['name'],
                 'Quantity' => $each['quantity'],
-                'Price' => 20,//$each['price']+$each['price']*($charisma_item->VATId/100),
-                'PriceWithVAT' => 100,// $each['price'],
+                'Price' => $each['price'],//+$each['price']*($charisma_item->VATId/100),
+                'PriceWithVAT' => $each['price'],// $each['price'],
                 'VATId' => $charisma_item->VATId,
                 'Amount' => $each['subtotal'],
-                'VATAmount' => 0,//$charisma_item->VATPercent/100*$each['price']*$each['quantity'],
+                'VATAmount' => $charisma_item->VATPercent / 100 * $each['price'] * $each['quantity'],
                 'IsPriceWithVAT' => 'true',
                 'CurrencyId' => $charisma_item->CurrencyId,
                 'DeliveryAddressId' => $billing_address_id,
@@ -214,117 +214,115 @@ class OrderController extends Controller
 
         $PaymentType = 'Card';
         if ($woocommerce_order['woocommerce_order']['order']['payment_details']['method_title'] == 'Plata la primirea coletului') {
-            $PaymentType = 'Courier';
+            $PaymentType = 'Card'; // 'cash';
         }
 
 
         # $client = new CharismaSoap();
         $data = [
-
             'OrderReq' => [
                 'ExternalId' => $woocommerce_order['woocommerce_order']['order']['id'],
-                'PartnerId' => '229238',
-                'BillingAddressId' => '235040',
-                'OrderDate' => '2020-09-17',
-                'PaymentType' => 'Card',
+                'PartnerId' => $partner_id,//'229238',
+                'BillingAddressId' => $billing_address_id,//'235040',
+                'OrderDate' => date('Y-m-d'),//data din site (probabil...) $woocommerce_order['woocommerce_order']['order']['created_at'], //'2020-09-17',
+                'PaymentType' => $PaymentType,
                 'Comments' => 'nu sunt',
                 'OrderState' => 'Draft',
                 'ItemList' => $ItemList,
-
-
             ]
         ];
 
-        #var_dump($data);die();
         $order_response = $client->createOrder($data);
-        #echo '<pre>';
-        #var_dump($order_response);
-        #echo '==========================';
-        #var_dump($ItemList);
+
+
     }
 
 
     public function adaugaComandaPersoanaJuridica(Request $request)
     {
         $woocommerce_order = $request->post();
-        #echo gettype($woocommerce_order);
-        #echo '<pre>';var_dump($woocommerce_order['woocommerce_order']['order']);
         $match = $this->matchCity($woocommerce_order['woocommerce_order']['order']['shipping_address']['city']);
         $client = new CharismaSoap();
 
-        var_dump($request); die();
 
-        $data = ['PartnerReq' => ['ExternalId' => 'ext01',
+        $data = ['PartnerReq' => ['ExternalId' => $woocommerce_order['woocommerce_order']['order']['order_number'],
             'PartnerType' => 'PJ',
-            'PartnerName' => 'Firma 7 SRL',
-            'FiscalRegistration' => 'RO12345',
-            'ComercialRegistration' => 'J40/23/1991',
-            'IsVATPayer' => 'false',
-            'Email' => 'contact5@firma.ro',
+            'PartnerName' => $woocommerce_order['woocommerce_order']['order']['Nume Companie'],
+            'FiscalRegistration' => $woocommerce_order['woocommerce_order']['order']['CUI'],
+            'ComercialRegistration' => $woocommerce_order['woocommerce_order']['order']['Registrul Comertului'],
+            'IsVATPayer' => 'true',
+            'Email' => $woocommerce_order['woocommerce_order']['order']['billing_address']['email'],
             'DeliveryAddressList' => [
-                'Name' => 'Adresa de livrare',
-                'Street' => 'Sos Armatei',
-                'LocalNumber' => '15',
-                'City' => ['CityId' => '420',
-                    'CityName' => 'Bucuresti Sector 4',
+                'Name' => $woocommerce_order['woocommerce_order']['order']['shipping_address']['address_2'],
+                'Street' => $woocommerce_order['woocommerce_order']['order']['shipping_address']['address_1'],
+                'LocalNumber' => '0',
+                'City' => ['CityId' => $match->CityId,
+                    'CityName' => $woocommerce_order['woocommerce_order']['order']['shipping_address']['city'],
                 ],
             ],
             'ContactInfoList' => [
-                'PersonName' => 'Popescu Ion',
-                'Email' => 'pion@firma.ro',
-                'MobileNumber' => '0744565897'
+                'PersonName' => $woocommerce_order['woocommerce_order']['order']['billing_address']['last_name'] . ' ' . $woocommerce_order['woocommerce_order']['order']['billing_address']['first_name'],
+                'Email' => $woocommerce_order['woocommerce_order']['order']['billing_address']['email'],
+                'MobileNumber' => $woocommerce_order['woocommerce_order']['order']['billing_address']['phone'],
 
             ]
-            /*
-                ''=>'',
-            ''=>'',
-            ''=>'',
-                */
+
         ]];
 
         $partner = $client->createPartner($data);
-        var_dump($partner);
 
+#        echo '<pre>';var_dump($partner);
+
+        $partner_id = $partner->PartnerResp->PartnerId;
+        $billing_address_id = $partner->PartnerResp->DeliveryAddressList->PartnerAddressId;
+
+        $produse = $woocommerce_order['woocommerce_order']['order']['line_items'];
+        $ItemList = [];
+        $i = 0;
+        foreach ($produse as $each) {
+            $charisma_item = $this->getItemFromCharisma($each['sku']);
+
+            $ItemList[$i] = ['ExternalId' => $each['id'],
+                'ItemId' => $charisma_item->ItemId,
+                'ItemName' => $each['name'],
+                'Quantity' => $each['quantity'],
+                'Price' => $each['price'],//+$each['price']*($charisma_item->VATId/100),
+                'PriceWithVAT' => $each['price'],// $each['price'],
+                'VATId' => $charisma_item->VATId,
+                'Amount' => $each['subtotal'],
+                'VATAmount' => $charisma_item->VATPercent / 100 * $each['price'] * $each['quantity'],
+                'IsPriceWithVAT' => 'true',
+                'CurrencyId' => $charisma_item->CurrencyId,
+                'DeliveryAddressId' => $billing_address_id,
+            ];
+            $i++;
+        }
+
+        $PaymentType = 'Card';
+        if ($woocommerce_order['woocommerce_order']['order']['payment_details']['method_title'] == 'Plata la primirea coletului') {
+            $PaymentType = 'Cash';
+        }
+
+
+        # $client = new CharismaSoap();
+        $data = [
+            'OrderReq' => [
+                'ExternalId' => $woocommerce_order['woocommerce_order']['order']['id'],
+                'PartnerId' => '229238',
+                'BillingAddressId' => '235040',
+                'OrderDate' => '2020-09-17',
+                'PaymentType' => $PaymentType,
+                'Comments' => 'nu sunt',
+                'OrderState' => 'Draft',
+                'ItemList' => $ItemList,
+            ]
+        ];
+
+        $order_response = $client->createOrder($data);
 
 
     }
 
-
-    public function test()
-    {
-        $project_id = 1;
-
-        $client = new CharismaSoap($project_id);
-        $data = ['PartnerReq' => ['ExternalId' => 'ext01',
-            'PartnerType' => 'PJ',
-            'PartnerName' => 'Firma 7 SRL',
-            'FiscalRegistration' => 'RO12345',
-            'ComercialRegistration' => 'J40/23/1991',
-            'IsVATPayer' => 'false',
-            'Email' => 'contact5@firma.ro',
-            'DeliveryAddressList' => [
-                'Name' => 'Adresa de livrare',
-                'Street' => 'Sos Armatei',
-                'LocalNumber' => '15',
-                'City' => ['CityId' => '420',
-                    'CityName' => 'Bucuresti Sector 4',
-                ],
-            ],
-            'ContactInfoList' => [
-                'PersonName' => 'Popescu Ion',
-                'Email' => 'pion@firma.ro',
-                'MobileNumber' => '0744565897'
-
-            ]
-            /*
-                ''=>'',
-            ''=>'',
-            ''=>'',
-                */
-        ]];
-        $partner = $client->createPartner($data);
-        var_dump($partner);
-    }
 
     public function listOrders()
     {
@@ -440,11 +438,6 @@ class OrderController extends Controller
     }
 
 
-    private function charismaSoap()
-    {
-
-    }
-
     /**
      * @param $skus array Array of sku's
      * @return array of skus and Charisma prices
@@ -463,6 +456,26 @@ class OrderController extends Controller
         return $price_array;
     }
 
+    /*
+     * Takes care of changing the SKU, quantity and price for special products (products with sku's like:  2101111031-24  => Dog Concept Plic Pui 100 g   24 buc/bax: 18+6 GRATIS
+     *
+     */
+    private function substringSKUFromPromotions($response)
+    {
+        foreach ($response->order->line_items as $index => $each) {
+            if (strpos($each->sku, '-') !== false) {
+                $response->order->line_items[$index]->name = $response->order->line_items[$index]->name . ' (cantit. pe buc.)'; //'sss';
+                $response->order->line_items[$index]->quantity = substr($each->sku, strpos($each->sku, "-") + 1); //1;
+                $response->order->line_items[$index]->sku = substr($each->sku, 0, strpos($each->sku, "-")); //'2101111031';
+                $response->order->line_items[$index]->price = round($each->price / $response->order->line_items[$index]->quantity, 2); //'1.89';
+            }
+
+        }
+
+        return $response;
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -473,12 +486,13 @@ class OrderController extends Controller
     public function newOrder($id, $order_id)
     {
         $response = $this->getOrderArray($id, $order_id);
-
+        $response = $this->substringSKUFromPromotions($response);
         $prices_table_last_update = DB::table('options')->where('var_name', 'prices_table_last_update')->first(); // si projectid-ul trebuie aici... id
         $nomenclator_table_last_update = DB::table('options')->where('var_name', 'nomenclator_table_last_update')->first();
 
-
         $products_from_order = $response->order->line_items;
+
+
         $skus = [];
         foreach ($products_from_order as $each_product) {
             $skus[] = $each_product->sku;
